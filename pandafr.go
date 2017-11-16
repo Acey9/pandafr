@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"github.com/Acey9/apacket/logp"
 	"github.com/Acey9/pandafr/config"
+	"github.com/Acey9/pandafr/decoder"
 	"github.com/Acey9/pandafr/sniffer"
 	"github.com/google/gopacket"
 	"os"
@@ -15,12 +17,22 @@ const version = "v0.10"
 
 type Pandafr struct {
 	//decoder
-	//publisher
+	decoder *decoder.Decoder
 }
 
 func (pandafr *Pandafr) OnPacket(data []byte, ci *gopacket.CaptureInfo) {
 	//fmt.Println(data)
-	logp.Debug("data:", "pkt")
+	pkt, err := pandafr.decoder.Process(data, ci)
+	if err != nil {
+		logp.Err("%v", err)
+	}
+	//TODO
+	b, err := json.Marshal(pkt)
+	if err != nil {
+		logp.Err("%s", err)
+		return
+	}
+	logp.Info(" pkt %s", b)
 }
 
 func optParse() {

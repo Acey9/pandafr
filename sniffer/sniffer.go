@@ -27,13 +27,16 @@ func (sniffer *SnifferSetup) Init(iFace *config.InterfacesConfig, worker Worker)
 		return
 	}
 	sniffer.pcapHandle = handle
+
 	sniffer.filter = iFace.BpfFilter
 	err = sniffer.pcapHandle.SetBPFFilter(sniffer.filter)
 	if err != nil {
 		return
 	}
 	sniffer.dataSource = gopacket.PacketDataSource(sniffer.pcapHandle)
+
 	sniffer.worker = worker
+
 	sniffer.isAlive = true
 	return
 }
