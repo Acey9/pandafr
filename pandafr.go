@@ -38,7 +38,7 @@ func (pandafr *Pandafr) OnPacket(data []byte, ci *gopacket.CaptureInfo) {
 func optParse() {
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "Usage of %s [option]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage of %s [option] [BpfFilter]\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 
@@ -48,8 +48,8 @@ func optParse() {
 	var rotateEveryKB uint64
 	var keepFiles int
 
-	flag.StringVar(&ifaceConfig.BpfFilter, "f", "", "BPF filter")
-	flag.StringVar(&ifaceConfig.File, "rf", "", "Read packets from file")
+	//flag.StringVar(&ifaceConfig.BpfFilter, "f", "", "BPF filter")
+	flag.StringVar(&ifaceConfig.File, "f", "", "Read packets from file")
 	flag.StringVar(&ifaceConfig.Dumpfile, "df", "", "Dump to file")
 
 	flag.StringVar(&logging.Level, "l", "info", "Logging level")
@@ -64,6 +64,10 @@ func optParse() {
 
 	flag.Parse()
 
+	args := flag.Args()
+	if len(args) > 0 {
+		ifaceConfig.BpfFilter = args[0]
+	}
 	if *printVersion {
 		fmt.Fprintf(os.Stderr, "%s\n", version)
 		os.Exit(0)
