@@ -20,6 +20,7 @@ type Packet struct {
 	Udp         *UDP      `json:"udp,omitempty"`
 	Dns         *DNS      `json:"dns,omitempty"`
 	PayloadSha1 string    `json:"psha1,omitempty"`
+	Flow        *Flow     `json:"-"`
 }
 
 const (

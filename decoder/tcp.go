@@ -7,8 +7,8 @@ import (
 type TCP struct {
 	SrcPort    layers.TCPPort     `json:"sport"`
 	DstPort    layers.TCPPort     `json:"dport"`
-	Seq        uint32             `json:"-"`
-	Ack        uint32             `json:"-"`
+	Seq        uint32             `json:"seq"`
+	Ack        uint32             `json:"ack"`
 	DataOffset uint8              `json:"-"`
 	FIN        bool               `json:"-"`
 	SYN        bool               `json:"-"`

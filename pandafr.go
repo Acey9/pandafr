@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/Acey9/apacket/logp"
+	"github.com/Acey9/pandafr/applayer"
 	"github.com/Acey9/pandafr/config"
 	"github.com/Acey9/pandafr/decoder"
 	"github.com/Acey9/pandafr/sniffer"
@@ -15,9 +16,14 @@ import (
 
 const version = "v0.10"
 
+type Applayer interface {
+	Parser(pkt *decoder.Packet)
+}
+
 type Pandafr struct {
 	//decoder
-	decoder *decoder.Decoder
+	decoder        *decoder.Decoder
+	applayerWorker map[string]applayer.Worker
 }
 
 func (pandafr *Pandafr) OnPacket(data []byte, ci *gopacket.CaptureInfo) {
@@ -25,8 +31,12 @@ func (pandafr *Pandafr) OnPacket(data []byte, ci *gopacket.CaptureInfo) {
 	pkt, err := pandafr.decoder.Process(data, ci)
 	if err != nil {
 		logp.Err("%v", err)
+		return
 	}
-	//TODO
+	for _, wk := range pandafr.applayerWorker {
+		//TODO
+		wk.Parser(pkt)
+	}
 	b, err := json.Marshal(pkt)
 	if err != nil {
 		logp.Err("%s", err)
@@ -100,7 +110,14 @@ func init() {
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	worker := &Pandafr{}
+	worker := &Pandafr{
+		applayerWorker: make(map[string]applayer.Worker),
+	}
+
+	worker.applayerWorker["ssl"] = applayer.NewSSL()
+	//TODO
+	//worker.applayerWorker["http"] = &applayer.HTTP{}
+
 	sniff := &sniffer.SnifferSetup{}
 	err := sniff.Init(config.Cfg.Iface, worker)
 	if err != nil {
