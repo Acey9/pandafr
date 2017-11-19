@@ -5,5 +5,6 @@ import (
 )
 
 type Worker interface {
-	Parser(pkt *decoder.Packet)
+	Parser(pkt *decoder.Packet) (err error)
+	Complete() (err error)
 }

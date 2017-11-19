@@ -124,5 +124,6 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
 	}
 	sniff.Run()
+	defer worker.applayerWorker["ssl"].Complete()
 	defer sniff.Close()
 }
